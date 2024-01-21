@@ -220,21 +220,32 @@ fn compute_d3() -> DTypePointer[DType.uint32]:
 
 alias BADCHAR = UInt32(0x01FFFFFF)
 
+@always_inline
 fn encode(input: StringLiteral) -> String:
     return encode(input.data().bitcast[DType.uint8](), len(input))
 
+@always_inline
 fn encode(input: String) -> String:
     return encode(input._as_ptr().bitcast[DType.uint8](), len(input))
 
+@always_inline
 fn encode(input: Tensor) -> String:
     return encode(input.data().bitcast[DType.uint8](), input.bytecount())
 
+@always_inline
 fn encode(input: DTypePointer[DType.uint8], length: Int) -> String:
-    var processed = 0
     let result_size = (length + 2) // 3 * 4 + 1
-    let result = DTypePointer[DType.int8].alloc(result_size)
-    var p = result.bitcast[DType.uint8]()
+    let result = DTypePointer[DType.int8].aligned_alloc(4, result_size)
+    
+    _encode(input, length, result.bitcast[DType.uint8]())
 
+    result.store(result_size - 1, 0)
+    return String(result, result_size)
+
+@always_inline
+fn _encode(input: DTypePointer[DType.uint8], length: Int, output: DTypePointer[DType.uint8]):
+    var processed = 0
+    var p = output
     if length > 2:
         for i in range(0, length - 2, 3):
             let t1 = input.load(i).to_int()
@@ -246,7 +257,7 @@ fn encode(input: DTypePointer[DType.uint8], length: Int) -> String:
                 e1.load(((t2 & 0x0F) << 2) | ((t3 >> 6) & 0x03)),
                 e1.load(t3)
             )
-            p.simd_store(bytes)
+            p.simd_nt_store(bytes)
             p = p.offset(4)
             processed = i + 3
 
@@ -259,7 +270,7 @@ fn encode(input: DTypePointer[DType.uint8], length: Int) -> String:
             cpad,
             cpad
         )
-        p.simd_store(bytes)
+        p.simd_nt_store(bytes)
     elif rest == 2:
         let t1 = input.load(processed).to_int()
         let t2 = input.load(processed+1).to_int()
@@ -269,12 +280,9 @@ fn encode(input: DTypePointer[DType.uint8], length: Int) -> String:
             e1.load(((t2 & 0x0F) << 2)),
             cpad
         )
-        p.simd_store(bytes)
+        p.simd_nt_store(bytes)
 
-    result.store(result_size - 1, 0)
-    return String(result, result_size)
-
-
+@always_inline
 fn decode[zero_terminated: Bool = False](input: String) raises -> (DTypePointer[DType.uint8], Int):
     var input_size = len(input)
     var input_pointer = input._as_ptr().bitcast[DType.uint8]()

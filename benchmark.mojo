@@ -47,4 +47,4 @@ fn main() raises:
             fast_min_d_dec = tok - tik
     
     print("Decode:", fast_min_d_dec / len(h1))
-
+    _ = text

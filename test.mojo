@@ -1,4 +1,5 @@
 from fast_base64 import encode, decode
+from fast_base64.chromium import encode as c_encode
 from base64 import b64encode
 from testing import assert_equal
 from samples import mobi_dick_plain, mobi_dick_base64
@@ -6,6 +7,7 @@ from samples import mobi_dick_plain, mobi_dick_base64
 fn b64(s: String) raises:
     let b = encode(s)
     assert_equal(b, b64encode(s))
+    assert_equal(b, c_encode(s))
     let p: DTypePointer[DType.uint8]
     let length: Int
     p, length = decode[zero_terminated=True](b)
@@ -21,6 +23,9 @@ fn main() raises:
     b64("ha")
     b64("hal")
     b64("halo")
+    b64("AtariAtat")
+    # There is a bug in std b64encode
+    # b64("AtariAtatürkAtatürk's")
 
     let b_chromium = encode(mobi_dick_plain)
     let b_std = b64encode(mobi_dick_plain)

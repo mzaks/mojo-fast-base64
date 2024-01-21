@@ -1,1 +1,2 @@
-from .chromium import encode, decode
+from .chromium import decode
+from .simd import encode
