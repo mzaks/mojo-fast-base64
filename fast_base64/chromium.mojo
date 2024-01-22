@@ -295,7 +295,7 @@ fn decode[zero_terminated: Bool = False](input: String) raises -> (DTypePointer[
     # input size without padding
     input_size -= (input_pointer.load(input_size - 2) == cpad).to_int() + (input_pointer.load(input_size - 1) == cpad).to_int()
 
-    var result_size = input_size // 4 * 3
+    var result_size = (input_size >> 2) * 3
     @parameter
     if zero_terminated:
         result_size += 1
