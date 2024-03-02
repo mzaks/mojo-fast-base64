@@ -6,14 +6,14 @@ from samples import mobi_dick_plain
 
 
 fn main() raises:
-    # let text = Path("/usr/share/dict/words").read_text()
-    let text = String(mobi_dick_plain)
+    # var text = Path("/usr/share/dict/words").read_text()
+    var text = String(mobi_dick_plain)
     var std_min_d_enc = 10000000
     var h0 = String("")
     for _ in range(10):
-        let tik = now()
+        var tik = now()
         h0 = b64encode(text)
-        let tok = now()
+        var tok = now()
         if std_min_d_enc > tok - tik:
             std_min_d_enc = tok - tik
     print("Std b64 encode:", (std_min_d_enc) / len(text), len(text))
@@ -21,9 +21,9 @@ fn main() raises:
     var h1 = String("")
     var fast_min_d_enc = 10000000
     for _ in range(10):
-        let tik = now()
+        var tik = now()
         h1 = encode(text)
-        let tok = now()
+        var tok = now()
         if fast_min_d_enc > tok - tik:
             fast_min_d_enc = tok - tik
 
@@ -37,11 +37,11 @@ fn main() raises:
     
     var fast_min_d_dec = 1000000
     for _ in range(10):
-        let p: DTypePointer[DType.uint8]
-        let l: Int
-        let tik = now()
+        var p: DTypePointer[DType.uint8]
+        var l: Int
+        var tik = now()
         p, l = decode[zero_terminated=True](h1)
-        let tok = now()
+        var tok = now()
         assert_equal(text, String(p.bitcast[DType.int8](), l))
         if fast_min_d_dec > tok - tik:
             fast_min_d_dec = tok - tik

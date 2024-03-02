@@ -12,7 +12,7 @@ alias e1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 alias d0 = compute_d0()
 
 fn compute_d0() -> DTypePointer[DType.uint32]:
-    let d = SIMD[DType.uint32, 256](
+    var d = SIMD[DType.uint32, 256](
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
@@ -57,7 +57,7 @@ fn compute_d0() -> DTypePointer[DType.uint32]:
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff
     )
-    let p = DTypePointer[DType.uint32].alloc(256)
+    var p = DTypePointer[DType.uint32].alloc(256)
     p.simd_store(d)
     return p
 
@@ -65,7 +65,7 @@ fn compute_d0() -> DTypePointer[DType.uint32]:
 alias d1 = compute_d1()
 
 fn compute_d1() -> DTypePointer[DType.uint32]:
-    let d = SIMD[DType.uint32, 256](
+    var d = SIMD[DType.uint32, 256](
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
@@ -110,14 +110,14 @@ fn compute_d1() -> DTypePointer[DType.uint32]:
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff
     )
-    let p = DTypePointer[DType.uint32].alloc(256)
+    var p = DTypePointer[DType.uint32].alloc(256)
     p.simd_store(d)
     return p
 
 alias d2 = compute_d2()
 
 fn compute_d2() -> DTypePointer[DType.uint32]:
-    let d = SIMD[DType.uint32, 256](
+    var d = SIMD[DType.uint32, 256](
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
@@ -162,14 +162,14 @@ fn compute_d2() -> DTypePointer[DType.uint32]:
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff
     )
-    let p = DTypePointer[DType.uint32].alloc(256)
+    var p = DTypePointer[DType.uint32].alloc(256)
     p.simd_store(d)
     return p
 
 alias d3 = compute_d3()
 
 fn compute_d3() -> DTypePointer[DType.uint32]:
-    let d = SIMD[DType.uint32, 256](
+    var d = SIMD[DType.uint32, 256](
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
@@ -214,7 +214,7 @@ fn compute_d3() -> DTypePointer[DType.uint32]:
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff,
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff
     )
-    let p = DTypePointer[DType.uint32].alloc(256)
+    var p = DTypePointer[DType.uint32].alloc(256)
     p.simd_store(d)
     return p
 
@@ -234,8 +234,8 @@ fn encode(input: Tensor) -> String:
 
 @always_inline
 fn encode(input: DTypePointer[DType.uint8], length: Int) -> String:
-    let result_size = (length + 2) // 3 * 4 + 1
-    let result = DTypePointer[DType.int8].aligned_alloc(4, result_size)
+    var result_size = (length + 2) // 3 * 4 + 1
+    var result = DTypePointer[DType.int8].alloc(result_size)
     
     _encode(input, length, result.bitcast[DType.uint8]())
 
@@ -248,10 +248,10 @@ fn _encode(input: DTypePointer[DType.uint8], length: Int, output: DTypePointer[D
     var p = output
     if length > 2:
         for i in range(0, length - 2, 3):
-            let t1 = input.load(i).to_int()
-            let t2 = input.load(i+1).to_int()
-            let t3 = input.load(i+2).to_int()
-            let bytes = SIMD[DType.uint8, 4](
+            var t1 = input.load(i).to_int()
+            var t2 = input.load(i+1).to_int()
+            var t3 = input.load(i+2).to_int()
+            var bytes = SIMD[DType.uint8, 4](
                 e0.load(t1),
                 e1.load(((t1 & 0x03) << 4) | ((t2 >> 4) & 0x0F)),
                 e1.load(((t2 & 0x0F) << 2) | ((t3 >> 6) & 0x03)),
@@ -261,10 +261,10 @@ fn _encode(input: DTypePointer[DType.uint8], length: Int, output: DTypePointer[D
             p = p.offset(4)
             processed = i + 3
 
-    let rest = length - processed
+    var rest = length - processed
     if rest == 1:
-        let t1 = input.load(processed).to_int()
-        let bytes = SIMD[DType.uint8, 4](
+        var t1 = input.load(processed).to_int()
+        var bytes = SIMD[DType.uint8, 4](
             e0.load(t1),
             e1.load(((t1 & 0x03) << 4)),
             cpad,
@@ -272,9 +272,9 @@ fn _encode(input: DTypePointer[DType.uint8], length: Int, output: DTypePointer[D
         )
         p.simd_nt_store(bytes)
     elif rest == 2:
-        let t1 = input.load(processed).to_int()
-        let t2 = input.load(processed+1).to_int()
-        let bytes = SIMD[DType.uint8, 4](
+        var t1 = input.load(processed).to_int()
+        var t2 = input.load(processed+1).to_int()
+        var bytes = SIMD[DType.uint8, 4](
             e0.load(t1),
             e1.load(((t1 & 0x03) << 4) | ((t2 >> 4) & 0x0F)),
             e1.load(((t2 & 0x0F) << 2)),
@@ -299,17 +299,17 @@ fn decode[zero_terminated: Bool = False](input: String) raises -> (DTypePointer[
     @parameter
     if zero_terminated:
         result_size += 1
-    let result = DTypePointer[DType.uint8].alloc(result_size)
+    var result = DTypePointer[DType.uint8].alloc(result_size)
 
-    let leftover = input_size & 3
-    let chunks = input_size >> 2
+    var leftover = input_size & 3
+    var chunks = input_size >> 2
     
     var bad_char = False
     var destination = result
     for i in range(chunks):
-        let x = d0[input_pointer[0].to_int()] | d1[input_pointer[1].to_int()] | d2[input_pointer[2].to_int()] | d3[input_pointer[3].to_int()]
+        var x = d0[input_pointer[0].to_int()] | d1[input_pointer[1].to_int()] | d2[input_pointer[2].to_int()] | d3[input_pointer[3].to_int()]
         bad_char = bad_char | x >= BADCHAR
-        let xu8 = bitcast[DType.uint8, 4](x)
+        var xu8 = bitcast[DType.uint8, 4](x)
         destination.store(xu8[0])
         destination.store(1, xu8[1])
         destination.store(2, xu8[2])
@@ -317,15 +317,15 @@ fn decode[zero_terminated: Bool = False](input: String) raises -> (DTypePointer[
         input_pointer = input_pointer.offset(4)
     
     if leftover == 2:
-        let x = d0[input_pointer[0].to_int()] | d1[input_pointer[1].to_int()]        
+        var x = d0[input_pointer[0].to_int()] | d1[input_pointer[1].to_int()]        
         bad_char = bad_char | x >= BADCHAR
-        let xu8 = bitcast[DType.uint8, 4](x)
+        var xu8 = bitcast[DType.uint8, 4](x)
         destination.store(xu8[0])
         result_size += 1
     elif leftover == 3:
-        let x = d0[input_pointer[0].to_int()] | d1[input_pointer[1].to_int()] | d2[input_pointer[2].to_int()]        
+        var x = d0[input_pointer[0].to_int()] | d1[input_pointer[1].to_int()] | d2[input_pointer[2].to_int()]        
         bad_char = bad_char | x >= BADCHAR
-        let xu8 = bitcast[DType.uint8, 4](x)
+        var xu8 = bitcast[DType.uint8, 4](x)
         destination.store(xu8[0])
         destination.store(1, xu8[1])
         result_size += 2

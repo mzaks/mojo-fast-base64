@@ -5,15 +5,15 @@ from testing import assert_equal
 from samples import mobi_dick_plain, mobi_dick_base64
 
 fn b64(s: String) raises:
-    let b = encode(s)
+    var b = encode(s)
     assert_equal(b, b64encode(s))
     assert_equal(b, c_encode(s))
-    let p: DTypePointer[DType.uint8]
-    let length: Int
+    var p: DTypePointer[DType.uint8]
+    var length: Int
     p, length = decode[zero_terminated=True](b)
     if len(s) == 0 and length == 0:
         return
-    let decoded_s = String(p.bitcast[DType.int8](), length)
+    var decoded_s = String(p.bitcast[DType.int8](), length)
     assert_equal(s, decoded_s)
 
 fn main() raises:
@@ -27,12 +27,12 @@ fn main() raises:
     # There is a bug in std b64encode
     # b64("AtariAtatürkAtatürk's")
 
-    let b_chromium = encode(mobi_dick_plain)
-    let b_std = b64encode(mobi_dick_plain)
+    var b_chromium = encode(mobi_dick_plain)
+    var b_std = b64encode(mobi_dick_plain)
     assert_equal(b_chromium, mobi_dick_base64)
     assert_equal(b_std, mobi_dick_base64)
 
-    let p: DTypePointer[DType.uint8]
-    let l: Int
+    var p: DTypePointer[DType.uint8]
+    var l: Int
     p, l = decode[True](mobi_dick_base64)
     assert_equal(mobi_dick_plain, String(p.bitcast[DType.int8](), l))
