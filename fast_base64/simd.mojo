@@ -1,6 +1,6 @@
 from .chromium import _encode
-from math import bitcast
 from math import rotate_bits_left
+from tensor import Tensor
 
 @always_inline
 fn encode(input: StringLiteral) -> String:
@@ -23,7 +23,7 @@ fn encode(input: DTypePointer[DType.uint8], length: Int) -> String:
     var cursor = result.bitcast[DType.uint8]()
     alias simd_width = 32
     while length - offset >= simd_width:
-        var a = data.simd_load[simd_width](offset)
+        var a = data.load[width=simd_width](offset)
         # aaaaaabb bbbbcccc ccdddddd ________
         var b = a.shuffle[
             1, 0, 2, 1, 

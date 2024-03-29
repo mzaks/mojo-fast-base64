@@ -3,11 +3,12 @@ from fast_base64 import encode, decode
 from time import now
 from testing import assert_equal
 from samples import mobi_dick_plain
+from pathlib import Path
 
 
 fn main() raises:
-    # var text = Path("/usr/share/dict/words").read_text()
-    var text = String(mobi_dick_plain)
+    var text = Path("/usr/share/dict/words").read_text()
+    # var text = String(mobi_dick_plain)
     var std_min_d_enc = 10000000
     var h0 = String("")
     for _ in range(10):

@@ -1,4 +1,4 @@
-from math import bitcast
+from tensor import Tensor
 
 alias cpad = "=".data().bitcast[DType.uint8]()[0]
 alias e0 = "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHHIIIIJJJJKKKKLLLLMMMMNNNNOOOOPPPPQQQQRRRRSSSSTTTTUUUUVVVVWWWWXXXXYYYYZZZZ"
@@ -58,7 +58,7 @@ fn compute_d0() -> DTypePointer[DType.uint32]:
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff
     )
     var p = DTypePointer[DType.uint32].alloc(256)
-    p.simd_store(d)
+    p.store(d)
     return p
 
 
@@ -111,7 +111,7 @@ fn compute_d1() -> DTypePointer[DType.uint32]:
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff
     )
     var p = DTypePointer[DType.uint32].alloc(256)
-    p.simd_store(d)
+    p.store(d)
     return p
 
 alias d2 = compute_d2()
@@ -163,7 +163,7 @@ fn compute_d2() -> DTypePointer[DType.uint32]:
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff
     )
     var p = DTypePointer[DType.uint32].alloc(256)
-    p.simd_store(d)
+    p.store(d)
     return p
 
 alias d3 = compute_d3()
@@ -215,7 +215,7 @@ fn compute_d3() -> DTypePointer[DType.uint32]:
         0x01ffffff, 0x01ffffff, 0x01ffffff, 0x01ffffff
     )
     var p = DTypePointer[DType.uint32].alloc(256)
-    p.simd_store(d)
+    p.store(d)
     return p
 
 alias BADCHAR = UInt32(0x01FFFFFF)
