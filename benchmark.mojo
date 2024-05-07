@@ -1,4 +1,4 @@
-from base64 import b64encode
+from base64 import b64encode, b64decode
 from fast_base64 import encode, decode
 from time import now
 from testing import assert_equal
@@ -35,7 +35,20 @@ fn main() raises:
         if h0[i] != h1[i]:
             print("std Error:", h0[i], "chrome:", h1[i], "on", i)
             break
-    
+
+    var std_min_d_dec = 1000000
+    for _ in range(10):
+        var p: DTypePointer[DType.uint8]
+        var l: Int
+        var tik = now()
+        var s = b64decode(h0)
+        var tok = now()
+        assert_equal(text, s)
+        if std_min_d_dec > tok - tik:
+            std_min_d_dec = tok - tik
+
+    print("Std Decode:", std_min_d_dec / len(h1))
+
     var fast_min_d_dec = 1000000
     for _ in range(10):
         var p: DTypePointer[DType.uint8]
@@ -47,5 +60,6 @@ fn main() raises:
         if fast_min_d_dec > tok - tik:
             fast_min_d_dec = tok - tik
     
-    print("Decode:", fast_min_d_dec / len(h1))
+    print("Fast Decode:", fast_min_d_dec / len(h1))
+    print("Decoding speedup:", Float64(std_min_d_dec) / (fast_min_d_dec))
     _ = text

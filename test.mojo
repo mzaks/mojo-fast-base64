@@ -24,8 +24,7 @@ fn main() raises:
     b64("hal")
     b64("halo")
     b64("AtariAtat")
-    # There is a bug in std b64encode
-    # b64("AtariAtatürkAtatürk's")
+    b64("AtariAtatürkAtatürk's")
 
     var b_chromium = encode(mobi_dick_plain)
     var b_std = b64encode(mobi_dick_plain)

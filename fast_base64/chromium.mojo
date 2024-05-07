@@ -248,9 +248,9 @@ fn _encode(input: DTypePointer[DType.uint8], length: Int, output: DTypePointer[D
     var p = output
     if length > 2:
         for i in range(0, length - 2, 3):
-            var t1 = input.load(i).to_int()
-            var t2 = input.load(i+1).to_int()
-            var t3 = input.load(i+2).to_int()
+            var t1 = int(input.load(i))
+            var t2 = int(input.load(i+1))
+            var t3 = int(input.load(i+2))
             var bytes = SIMD[DType.uint8, 4](
                 e0.load(t1),
                 e1.load(((t1 & 0x03) << 4) | ((t2 >> 4) & 0x0F)),
@@ -263,7 +263,7 @@ fn _encode(input: DTypePointer[DType.uint8], length: Int, output: DTypePointer[D
 
     var rest = length - processed
     if rest == 1:
-        var t1 = input.load(processed).to_int()
+        var t1 = int(input.load(processed))
         var bytes = SIMD[DType.uint8, 4](
             e0.load(t1),
             e1.load(((t1 & 0x03) << 4)),
@@ -272,8 +272,8 @@ fn _encode(input: DTypePointer[DType.uint8], length: Int, output: DTypePointer[D
         )
         p.simd_nt_store(bytes)
     elif rest == 2:
-        var t1 = input.load(processed).to_int()
-        var t2 = input.load(processed+1).to_int()
+        var t1 = int(input.load(processed))
+        var t2 = int(input.load(processed+1))
         var bytes = SIMD[DType.uint8, 4](
             e0.load(t1),
             e1.load(((t1 & 0x03) << 4) | ((t2 >> 4) & 0x0F)),
@@ -293,7 +293,7 @@ fn decode[zero_terminated: Bool = False](input: String) raises -> (DTypePointer[
         raise "We do not support unpadded base64 strings"
     
     # input size without padding
-    input_size -= (input_pointer.load(input_size - 2) == cpad).to_int() + (input_pointer.load(input_size - 1) == cpad).to_int()
+    input_size -= int(input_pointer.load(input_size - 2) == cpad) + int(input_pointer.load(input_size - 1) == cpad)
 
     var result_size = (input_size >> 2) * 3
     @parameter
@@ -307,8 +307,8 @@ fn decode[zero_terminated: Bool = False](input: String) raises -> (DTypePointer[
     var bad_char = False
     var destination = result
     for i in range(chunks):
-        var x = d0[input_pointer[0].to_int()] | d1[input_pointer[1].to_int()] | d2[input_pointer[2].to_int()] | d3[input_pointer[3].to_int()]
-        bad_char = bad_char | x >= BADCHAR
+        var x = d0[input_pointer[0]] | d1[input_pointer[1]] | d2[input_pointer[2]] | d3[input_pointer[3]]
+        bad_char = bad_char or (x >= BADCHAR)
         var xu8 = bitcast[DType.uint8, 4](x)
         destination.store(xu8[0])
         destination.store(1, xu8[1])
@@ -317,14 +317,14 @@ fn decode[zero_terminated: Bool = False](input: String) raises -> (DTypePointer[
         input_pointer = input_pointer.offset(4)
     
     if leftover == 2:
-        var x = d0[input_pointer[0].to_int()] | d1[input_pointer[1].to_int()]        
-        bad_char = bad_char | x >= BADCHAR
+        var x = d0[input_pointer[0]] | d1[input_pointer[1]]        
+        bad_char = bad_char or (x >= BADCHAR)
         var xu8 = bitcast[DType.uint8, 4](x)
         destination.store(xu8[0])
         result_size += 1
     elif leftover == 3:
-        var x = d0[input_pointer[0].to_int()] | d1[input_pointer[1].to_int()] | d2[input_pointer[2].to_int()]        
-        bad_char = bad_char | x >= BADCHAR
+        var x = d0[input_pointer[0]] | d1[input_pointer[1]] | d2[input_pointer[2]]        
+        bad_char = bad_char or (x >= BADCHAR)
         var xu8 = bitcast[DType.uint8, 4](x)
         destination.store(xu8[0])
         destination.store(1, xu8[1])
